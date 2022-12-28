@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestor de datos</title>
+    <style>
+        body{margin: 0;}
+        .titulo{
+            background: linear-gradient(rgb(54, 130, 206), rgb(196, 224, 228));
+            display: flex;
+            justify-content: center; 
+            font-family: 'Segoe UI', 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+        .container{
+            display: grid;
+            grid-template-columns: 1fr 3fr;
+            height: 85vh; 
+        }
+        .left{ 
+            background: linear-gradient(rgb(196, 224, 228), rgb(27, 27, 118));
+            display: flex;
+            place-items: center;
+            justify-content: center;            
+        }
+        .right{ 
+            background: linear-gradient(rgb(196, 224, 228), rgb(27, 27, 118));
+            display: flex;
+            place-items: center;
+            justify-content: center;   
+        }   
+
+    </style>
+</head>
+<body>
+    <div class="titulo">
+        <h1>Gestor de datos</h1>
+    </div>
+    <div class="container">
+        <div class="left">
+            <div>
+                <p-card header="Perfil" subheader="Datos de entrada" [style]="{width: '320px'}" back styleClass="shadow-2">
+                    <ng-template pTemplate="content">
+                        <form #clientForm="ngForm" (ngSubmit)="addClient(clientForm)">
+                            <input type="hidden" name="_id" #_id="ngModel" [(ngModel)]="selectedClient._id">
+                            <div class="field">
+                                <label for="name">DNI</label>
+                                <div class="p-inputgroup">
+                                    <span class="p-inputgroup-addon"><i class="pi pi-id-card"></i></span>
+                                    <p-inputNumber id="dni" name="dni" #age="ngModel" [(ngModel)]="selectedClient.dni" [useGrouping]="false" placeholder="Coloque su DNI"></p-inputNumber>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label for="name">Apellido</label>
+                                <div class="p-inputgroup">
+                                    <span class="p-inputgroup-addon"><i class="pi pi-user"></i></span>
+                                    <input [style]="{width: '300px'}" type="text" pInputText id="surname" name="surname" #name="ngModel" [(ngModel)]="selectedClient.surname" placeholder="Coloque su apellido" required/>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label for="name">Nombre</label>
+                                <div class="p-inputgroup">
+                                    <span class="p-inputgroup-addon"><i class="pi pi-user"></i></span>
+                                    <input [style]="{width: '300px'}" type="text" pInputText id="name" name="name" #name="ngModel" [(ngModel)]="selectedClient.name" placeholder="Coloque su nombre" required />
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label for="name">Edad</label>
+                                <div class="p-inputgroup">
+                                    <span class="p-inputgroup-addon"><i class="pi pi-calendar"></i></span>
+                                    <p-inputNumber id="age" name="age" #age="ngModel" [(ngModel)]="selectedClient.age" placeholder="Coloque su edad" mode="decimal"
+                                    [min]="18"
+                                    [max]="120"></p-inputNumber>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label for="name">Salario</label>
+                                <div class="p-inputgroup">
+                                    <span class="p-inputgroup-addon"><i class="pi pi-money-bill"></i></span>
+                                    <p-inputNumber id="salary" name="salary" #salary="ngModel" [(ngModel)]="selectedClient.salary"  placeholder="Coloque su salario" mode="currency" currency="USD" locale="en-US"></p-inputNumber>
+                                </div>
+                            </div> 
+                            <p-button label="Guardar" icon="pi pi-check"  (click)="addClient(clientForm)"></p-button>
+                            <p-button label="Cancelar" icon="pi pi-times" styleClass="p-button-secondary"  (click)="resetForm(clientForm)" [style]="{'margin-left': '.5em'} "></p-button>
+                        </form>
+                    </ng-template>   
+                </p-card>
+            </div>
+        </div>
+
+
+        <div class="right">
+            <div>
+                <p-card header="Tabla de usuarios" [style]="{width: '1100px'}" styleClass="shadow-2">
+                    <p-table [value]="clients" [rows]="5" [paginator]="true" styleClass="p-datatable-gridlines" currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} entradas" [showCurrentPageReport]="true">
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <th style="width:4%;"><i class="pi pi-users"></i></th>
+                                <th style="width:16%;">DNI</th>
+                                <th style="width:17%;">Apellido</th>
+                                <th style="width:17%;">Nombre</th>
+                                <th style="width:16%;">Edad</th>
+                                <th style="width:17%;">Salario</th>
+                                <th style="width:14%;" >Ajustes</th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-index="rowIndex" let-client>
+                            <tr>
+                                <td>{{ index + 1 }}</td>
+                                <td>{{ client.dni }}</td>
+                                <td>{{ client.surname }}</td>
+                                <td>{{ client.name }}</td>
+                                <td>{{ client.age }}</td>
+                                <td>{{ client.salary | currency: 'USD' }}</td>
+                                <td>
+                                    <button pButton pRipple icon="pi pi-user-edit" class="p-button-rounded p-button-primary p-mr-2" (click)="editClient(client)"></button>
+                                    <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning" (click)="deleteClient(client)"></button>
+                                </td>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="summary">
+                            <div class="p-d-flex p-ai-center p-jc-between">
+                                En total hay {{clients ? clients.length : 0 }} personas.
+                            </div>
+                        </ng-template>
+                    </p-table>
+                </p-card>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
